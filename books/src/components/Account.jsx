@@ -1,16 +1,12 @@
-import React, { Fragment, useEffect, useState, useContext } from "react";
-import { Link, useParams, Redirect } from "react-router-dom";
+import React, {useContext, useReducer} from "react";
+import {Redirect, useHistory} from "react-router-dom";
 import firebase from "../firebase";
-import { useHistory } from "react-router-dom";
-import { AuthContext } from "../Auth";
+import {AuthContext} from "../Auth";
+import {updateUserAction} from "../AuthReducer";
 
 export default function Account() {
-  const [user, setUser] = useState(null);
-  const [name, setName] = useState(null);
-  const [password, setPassword] = useState(null);
   const history = useHistory();
-
-  //test git
+  const { currentUser, dispatch } = useContext(AuthContext);
 
   const register = async (event) => {
     event.preventDefault();
@@ -22,19 +18,23 @@ export default function Account() {
     } = event.target.elements;
 
     try {
-      const data = await firebase
+
+      const data = {
+        username: nameRegister.value,
+        email: emailRegister.value
+      };
+
+      const registerData = await firebase
         .auth()
         .createUserWithEmailAndPassword(
           emailRegister.value,
           passwordRegister.value
         );
 
-      await firebase.firestore().collection("users").doc(data.user.uid).set({
-        email: emailRegister.value,
-        name: nameRegister.value,
-      });
-
+      await firebase.firestore().collection("users").doc(registerData.user.uid).set({...data});
+      dispatch(updateUserAction({...data, uid: registerData.user.uid}));
       history.push("/");
+
     } catch (error) {
       alert(error.message);
     }
@@ -54,8 +54,6 @@ export default function Account() {
       alert(err.message);
     }
   };
-
-  const { currentUser } = useContext(AuthContext);
 
   if (currentUser) {
     return <Redirect to="/" />;

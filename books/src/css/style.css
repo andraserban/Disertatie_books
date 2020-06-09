@@ -4219,6 +4219,11 @@ h3.widget-title-modal {
     background-color: #ce7852;
     background-position: 100% center;
     border-color: #ce7852; }
+.product__info__main .product-addto-links a.added {
+  background-color: #ce7852;
+  background-position: 100% center;
+  border-color: #ce7852;
+}
 .product__info__main .product__overview {
   border-top: 1px solid #ebebeb;
   clear: both;
