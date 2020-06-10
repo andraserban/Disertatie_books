@@ -1,30 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useReducer, useState} from "react";
 import firebase from "./firebase.js";
+import {AuthReducer, updateUserAction} from "./AuthReducer";
 
 export const AuthContext = React.createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [pending, setPending] = useState(true);
+export const AuthProvider = ({children}) => {
+    const [currentUser, dispatch] = useReducer(AuthReducer, null);
+    const [pending, setPending] = useState(true);
 
-  useEffect(() => {
-    firebase.auth().onAuthStateChanged(user => {
-      setCurrentUser(user);
-      setPending(false);
-    });
-  }, []);
+    const isNewUser = () => {
+        if (!firebase.auth().currentUser) {
+            return false;
+        }
 
-  if (pending) {
-    return <>Loading...</>;
-  }
+        return firebase.auth().currentUser.metadata.creationTime === firebase.auth().currentUser.metadata.lastSignInTime;
+    }
 
-  return (
-    <AuthContext.Provider
-      value={{
-        currentUser
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+    const logUser = () => {
+        firebase.auth().onAuthStateChanged(async (user) => {
+            let data = null;
+
+            if (user) {
+                const response = await firebase.firestore().collection('users').doc(user.uid).get();
+                data = {...response.data(), uid: user.uid};
+            }
+            if (!isNewUser()) {
+                dispatch(updateUserAction(data));
+            }
+            setPending(false);
+        });
+    }
+
+    useEffect(() => {
+        (async function asyncFn() {
+            await logUser();
+        })();
+    }, []);
+
+    if (pending) {
+        return <>Loading...</>;
+    }
+
+    return (
+        <AuthContext.Provider value={{currentUser, dispatch}}>
+            {children}
+        </AuthContext.Provider>
+    );
 };

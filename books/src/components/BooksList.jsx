@@ -67,7 +67,6 @@ export default function BooksList() {
       .then(snapshot => {
         const categories = snapshot.docs.map(doc => doc.data());
         setCategories(categories);
-        console.log(categories);
       });
   };
 

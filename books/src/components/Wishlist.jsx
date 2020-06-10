@@ -34,8 +34,6 @@ export default function WishList() {
 
               setBooks(remainingBooks);
             });
-
-          return doc.data();
         });
       });
   };
@@ -76,7 +74,7 @@ export default function WishList() {
                                 className="product-remove"
                                 onClick={() => deleteItemFromWishlist(book.id)}
                               >
-                                <Link to="#">×</Link>
+                                <Link to="#" style={{padding: 0}}>×</Link>
                               </td>
                               <td className="product-thumbnail">
                                 <Link to="#">
