@@ -2,8 +2,20 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export default function BookListCard({ book }) {
+
+  const getReviewStars = (rating) => {
+    const starPercentage = (rating / 5) * 100;
+    const starWidth = `${(Math.round(starPercentage / 10) * 10)}%`;
+
+    return (
+        <div className="stars-outer">
+          <div className="stars-inner" style={{width: starWidth}}/>
+        </div>
+    );
+  };
+
   return (
-    <div className="product product__style--3 col-lg-4 col-md-4 col-sm-6 col-12">
+    <div className="product product__style--3 col-lg-4 col-md-4 col-sm-6 col-12" title={book.title}>
       <div className="product__thumb">
         <Link className="img1" to={`book/${book.id}`}>
           <img
@@ -25,35 +37,20 @@ export default function BookListCard({ book }) {
           <div className="actions_inner">
             <ul className="add_to_links">
               <li>
-                <a
-                  data-toggle="modal"
+                <Link
                   title="Quick View"
                   className="quickview modal-view detail-link"
-                  href="#productmodal"
+                  to={`book/${book.id}`}
                 >
                   <i className="bi bi-search"></i>
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
         </div>
         <div className="product__hover--content">
           <ul className="rating d-flex">
-            <li className="on">
-              <i className="fa fa-star-o"></i>
-            </li>
-            <li className="on">
-              <i className="fa fa-star-o"></i>
-            </li>
-            <li className="on">
-              <i className="fa fa-star-o"></i>
-            </li>
-            <li>
-              <i className="fa fa-star-o"></i>
-            </li>
-            <li>
-              <i className="fa fa-star-o"></i>
-            </li>
+            {getReviewStars(book.rating)}
           </ul>
         </div>
       </div>

@@ -3,13 +3,13 @@ import { useEffect } from "react";
 import firebase from "../firebase";
 import BookListCard from "./BookListCard";
 import BookCategories from "./BookCategories";
-import { Link } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import { Button } from "reactstrap";
+import {Link, useHistory} from "react-router-dom";
 
 export default function BooksList() {
   const [books, setBooks] = useState([]);
@@ -17,6 +17,7 @@ export default function BooksList() {
   const [isDone, setIsDone] = useState(false);
   const [search, setSearch] = useState("");
   const [categories, setCategories] = useState([]);
+  const history = useHistory();
 
   const getBooks = () => {
     firebase
@@ -37,28 +38,6 @@ export default function BooksList() {
       });
   };
 
-  const getAllBooks = () => {
-    firebase
-      .firestore()
-      .collection("books")
-      .get()
-      .then(snapshot => {
-        snapshot.docs.map(async doc => {
-          const currentCategories = await firebase
-            .firestore()
-            .collection("books")
-            .doc(doc.id)
-            .collection("categories")
-            .get()
-            .then(snap => snap.docs.map(category => category.data().name));
-
-          setCategories(categories.concat(currentCategories));
-
-          return doc.data();
-        });
-      });
-  };
-
   const getCategories = () => {
     firebase
       .firestore()
@@ -68,6 +47,21 @@ export default function BooksList() {
         const categories = snapshot.docs.map(doc => doc.data());
         setCategories(categories);
       });
+  };
+
+  const handleCategoryClick = (categoryId) => {
+    history.replace(`/books?category=${categoryId}`);
+
+    firebase.firestore()
+        .collection('books')
+        .where('category', 'array-contains', Number(categoryId))
+        .get()
+        .then((snap) => {
+          const books = snap.docs.map(doc => doc.data());
+          
+          setBooks(books);
+          setIsDone(true);
+        })
   };
 
   const getMoreBooks = () => {
@@ -147,9 +141,6 @@ export default function BooksList() {
   useEffect(() => {
     getCategories();
     getBooks();
-    (async function asyncFn() {
-      await getAllBooks();
-    })();
   }, []);
 
   return (
@@ -158,7 +149,7 @@ export default function BooksList() {
         <div className="row">
           <div className="col-lg-3 col-12 order-2 order-lg-1 md-mt-40 sm-mt-40">
             <div className="shop__sidebar">
-              <BookCategories />
+              <BookCategories categories={categories} onCategoryClick={handleCategoryClick}/>
 
               <aside className="wedget__categories poroduct__tag">
                 <h3 className="wedget__title">Product Tags</h3>

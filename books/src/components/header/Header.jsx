@@ -18,7 +18,7 @@ export default function Header() {
                 <div className="row">
                     <div className="col-md-6 col-sm-6 col-6 col-lg-2">
                         <div className="logo">
-                            <Link to="index.html">
+                            <Link to="/">
                                 <img src={logoImg} alt="logo images"/>
                             </Link>
                         </div>

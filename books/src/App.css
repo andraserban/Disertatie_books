@@ -28,6 +28,42 @@
   color: #61dafb;
 }
 
+.stars-outer {
+  font-size: 1rem;
+  display: inline-block;
+  position: relative;
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+}
+
+.stars-outer::before {
+  font-family: 'Font Awesome 5 Free';
+  content: "\f005 \f005 \f005 \f005 \f005";
+}
+
+.stars-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 0;
+}
+
+.stars-inner::before {
+  font-family: 'Font Awesome 5 Free';
+  content: "\f005 \f005 \f005 \f005 \f005";
+  color: #ce7852;
+}
+
+i.text-warning {
+  color: #ce7852 !important;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

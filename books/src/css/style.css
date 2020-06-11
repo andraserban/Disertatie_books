@@ -4618,23 +4618,10 @@ h3.widget-title-modal {
     .blog-details .comments_area .comment__list li .wn__comment .content {
       border: 1px solid #ececec;
       border-radius: 3px;
-      margin-left: 10px;
       padding: 10px;
+      padding-bottom: 3px;
       width: 100%;
       position: relative; }
-      .blog-details .comments_area .comment__list li .wn__comment .content::before {
-        background: #fff none repeat scroll 0 0;
-        border-bottom: 1px solid #ececec;
-        border-left: 1px solid #ececec;
-        content: "";
-        display: block;
-        height: 10px;
-        left: -5px;
-        position: absolute;
-        top: 10px;
-        -webkit-transform: rotate(45deg);
-                transform: rotate(45deg);
-        width: 10px; }
       .blog-details .comments_area .comment__list li .wn__comment .content .comnt__author span {
         margin-right: 10px;
         color: #333;
@@ -4701,18 +4688,19 @@ h3.widget-title-modal {
 .blog-details .comment_respond .comment__form .submite__btn {
   margin-top: 30px;
 }
-.blog-details .comment_respond .comment__form .submite__btn a {
+.blog-details .comment_respond .comment__form .submite__btn button {
   background: #ce7852 none repeat scroll 0 0;
   color: #fff;
   display: inline-block;
   font-size: 12px;
   font-weight: 700;
-  padding: 12px 30px 8px;
+  padding: 12px 30px;
   text-shadow: none;
   text-transform: uppercase;
   transition: all 0.4s ease 0s;
+  border: unset;
 }
-.blog-details .comment_respond .comment__form .submite__btn a:hover {
+.blog-details .comment_respond .comment__form .submite__btn button:hover {
   background: #000 none repeat scroll 0 0;
   color: #fff;
 }
