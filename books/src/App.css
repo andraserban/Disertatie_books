@@ -56,6 +56,19 @@
   color: #ce7852;
 }
 
+.ellipsis-class {
+  overflow-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.line-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 i.text-warning {
   color: #ce7852 !important;
 }

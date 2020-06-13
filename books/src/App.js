@@ -13,7 +13,8 @@ import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
 import PrivateRoute from "./PrivateRoute";
 import {AuthProvider} from "./Auth";
-import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
+import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import {ClubProvider} from "./ClubProvider";
 
 const HomeComponent = lazy(() => import("./components/home/Home"));
 const BooksListComponent = lazy(() => import("./components/BooksList"));
@@ -22,7 +23,9 @@ const SingleBookComponent = lazy(() => import("./components/BookPage"));
 const WishListComponent = lazy(() => import("./components/Wishlist"));
 const AccountComponent = lazy(() => import("./components/Account"));
 const ProfileComponent = lazy(() => import("./components/Profile"));
-const NoMatchComponent = lazy(() => import("./components/NoMatch"));
+const BookClubComponent = lazy(() => import("./components/club/BookClub"));
+const BookClubArticleComponent = lazy(() => import("./components/club/BookClubArticle"));
+const BookClubAdminComponent = lazy(() => import("./components/club/BookClubAdmin"));
 
 function App() {
     return (
@@ -42,6 +45,12 @@ function App() {
                         <PrivateRoute path="/books" component={BooksListComponent} />
                         <PrivateRoute path="/wishlist" component={WishListComponent} />
                         <PrivateRoute path="/profile" component={ProfileComponent} />
+
+                        <ClubProvider>
+                            <PrivateRoute path="/club" exact component={BookClubComponent} />
+                            <PrivateRoute path="/club/submit" exact component={BookClubAdminComponent} />
+                            <PrivateRoute path="/club/:uid" exact component={BookClubArticleComponent} />
+                        </ClubProvider>
 
                     </Switch>
                     <Footer/>
