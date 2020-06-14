@@ -17,7 +17,6 @@ export async function getCommentsAction() {
 }
 
 export const ClubReducer = (state, {type, data}) => {
-    console.log('reducer?', data);
     switch (type) {
         case 'GET_COMMENTS':
             return data;

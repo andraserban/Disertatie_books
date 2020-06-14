@@ -8,6 +8,7 @@ import "./css/bootstrap.min.css";
 import "./css/plugins.css";
 import "./css/style.css";
 import "./css/custom.css";
+import "./styles/global.scss";
 
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
@@ -48,7 +49,7 @@ function App() {
 
                         <ClubProvider>
                             <PrivateRoute path="/club" exact component={BookClubComponent} />
-                            <PrivateRoute path="/club/submit" exact component={BookClubAdminComponent} />
+                            <PrivateRoute path="/club/admin/submit" exact component={BookClubAdminComponent} />
                             <PrivateRoute path="/club/:uid" exact component={BookClubArticleComponent} />
                         </ClubProvider>
 

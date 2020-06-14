@@ -2075,7 +2075,9 @@ Header Styles
   position: absolute;
   right: 0;
   top: 0px;
-  z-index: 9; }
+  z-index: 9;
+  background-color: #fff;
+}
 
 
 /* switcher account*/
@@ -3794,6 +3796,7 @@ h3.widget-title-modal {
 	  text-align: left;
 	  transition: background 0.7s ease 0s;
 	  width: 100%;
+      min-height: 385px;
 	}
     .post__itam .content h3 {
 	  color: #333;
@@ -4042,11 +4045,12 @@ h3.widget-title-modal {
           text-decoration: line-through; }
 
 /*--------------------------
-  Breadcaump Styles
+  BreadCrumbs Styles
 ----------------------------*/
 .ht__bradcaump__area {
   padding-bottom: 110px;
   padding-top: 220px;
+  margin-top: 90px;
 }
 .bradcaump__inner .bradcaump-title {
   font-size: 24px;

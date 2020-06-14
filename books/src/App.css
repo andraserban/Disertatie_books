@@ -69,6 +69,19 @@
   overflow: hidden;
 }
 
+.books-button {
+  background: #ce7852 none repeat scroll 0 0;
+  color: #fff;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 12px 30px;
+  text-shadow: none;
+  text-transform: uppercase;
+  transition: all 0.4s ease 0s;
+  border: unset;
+}
+
 i.text-warning {
   color: #ce7852 !important;
 }
@@ -85,3 +98,29 @@ i.text-warning {
     transform: rotate(360deg);
   }
 }
+
+.slick-prev:before, .slick-next:before {
+  font-size: 22px !important;
+  color: #000 !important;
+}
+
+.slick-dots li button:before {
+  font-size: 9px !important;
+}
+
+.slick-slide {
+  width: 320px;
+}
+
+.book-page-slider .slick-slide {
+  height: 400px !important;
+}
+
+.book-page-slider .slick-slide img {
+  height: 380px !important;
+}
+
+.ht__bradcaump__area.home-banner {
+  padding-top: 550px;
+}
+

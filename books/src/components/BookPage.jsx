@@ -1,5 +1,5 @@
 import React, {Fragment, useContext, useEffect, useRef, useState} from "react";
-import {Link, useParams} from "react-router-dom";
+import {Link, useParams, useHistory} from "react-router-dom";
 import firebase from "../firebase";
 import {Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
 import classnames from 'classnames';
@@ -7,12 +7,15 @@ import './book-page.scss';
 import {toast, ToastContainer} from 'react-toastify';
 import {AuthContext} from "../Auth";
 import format from "date-fns/format";
+import Slider from "react-slick";
+import BookCategories from "./BookCategories";
 
 const initialReview = {
     name: '',
     date: new firebase.firestore.Timestamp.now(),
     body: '',
-    stars: ''
+    stars: '',
+    book: ''
 }
 
 export default function BookPage() {
@@ -21,9 +24,20 @@ export default function BookPage() {
     const [images, setImages] = useState([]);
     const [review, setReview] = useState(initialReview);
     const [reviews, setReviews] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [canAddToFavorite, setCanAddToFavorite] = useState(true);
     const {id} = useParams();
+    const history = useHistory();
     const {currentUser} = useContext(AuthContext);
+
+    const sliderSettings = {
+        centerMode: true,
+        centerPadding: '0px',
+        slidesToShow: 1,
+        dots: true,
+        infinite: true,
+        adaptiveHeight: true
+    };
 
     const STARS_RATINGS = [1, 2, 3, 4, 5];
     const starsHolder = useRef();
@@ -41,6 +55,22 @@ export default function BookPage() {
                 <div className="stars-inner" style={{width: starWidth}}/>
             </div>
         );
+    };
+
+    const getBookCategories = (bookCategories) => {
+        firebase.firestore()
+            .collection('categories')
+            .where('id', 'in', bookCategories)
+            .get()
+            .then(snap => {
+                const data = snap.docs.map(review => review.data());
+
+                setCategories(data);
+            });
+    };
+
+    const handleCategoryClick = (categoryId) => {
+        history.push(`/books?category=${categoryId}`);
     };
 
     const resetReviewStars = () => {
@@ -82,14 +112,17 @@ export default function BookPage() {
 
         setReview({
             ...review,
+            book: book.uid,
             name: currentUser.username,
             ...(!review.stars && {
                 stars: '1'
             })
         });
 
-        const payload = {...review,
+        const payload = {
+            ...review,
             name: currentUser.username,
+            book: book.uid,
             ...(!review.stars && {
                 stars: '1'
             })
@@ -105,12 +138,12 @@ export default function BookPage() {
                 const ratings = updatedReviews.map(({stars}) => Number(stars));
                 const ratingsSum = ratings.reduce((acc, current) => acc + current, 0);
                 const updatedAverageRating = (ratingsSum / ratings.length).toFixed(2) || 0;
-                
+
                 firebase.firestore()
                     .collection("books")
                     .doc(book.uid)
                     .set({
-                       rating: updatedAverageRating
+                        rating: updatedAverageRating
                     }, {merge: true})
                     .then(() => {
                         setBook({...book, rating: updatedAverageRating});
@@ -181,6 +214,8 @@ export default function BookPage() {
                     return doc.data()
                 });
 
+                getBookCategories(book[0].category || []);
+
                 setBook({
                     ...book[0],
                     uid: bookUid[0]
@@ -247,6 +282,22 @@ export default function BookPage() {
 
     return (
         <Fragment>
+            <div className="ht__bradcaump__area bg-image--4">
+                <div className="container">
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <div className="bradcaump__inner text-center">
+                                <h2 className="bradcaump-title">Book club</h2>
+                                <nav className="bradcaump-content">
+                                    <Link className="breadcrumb_item" to="/">Home</Link>
+                                    <span className="brd-separetor">/</span>
+                                    <span className="breadcrumb_item active">Book club</span>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {book && <div className="book-page-container maincontent bg--white pt--80 pb--55">
                 <ToastContainer/>
                 <div className="container">
@@ -254,17 +305,13 @@ export default function BookPage() {
                         <div className="col-lg-9 col-12">
                             <div className="wn__single__product">
                                 <div className="row">
-                                    <div className="col-lg-6 col-12">
-                                        <div className="wn__fotorama__wrapper">
-                                            <div className="fotorama wn__fotorama__action" data-nav="thumbs">
-                                                {images && images.map((image, key) => {
-                                                    return (
-                                                        <Link key={key} to="1.jpg"><img
-                                                            src={`${process.env.REACT_APP_IMAGESFOLDER}/${image}`}/></Link>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
+                                    <div className="col-lg-6 col-12" style={{paddingRight: '25px'}}>
+                                        <Slider {...sliderSettings} className="book-page-slider">
+                                            {images && images.map((image, key) =>
+                                                <img key={key} src={`${process.env.REACT_APP_IMAGESFOLDER}/${image}`}/>
+                                            )}
+                                        </Slider>
+
                                     </div>
                                     <div className="col-lg-6 col-12">
                                         <div className="product__info__main">
@@ -272,7 +319,8 @@ export default function BookPage() {
                                             <div className="author-box">
                                                 <span>{book.author}</span>
                                             </div>
-                                            <div className="product-reviews-summary mt-3 d-flex" title={`${book.rating} stars`}>
+                                            <div className="product-reviews-summary mt-3 d-flex"
+                                                 title={`${book.rating} stars`}>
                                                 {getReviewStars(book.rating)}
                                             </div>
                                             <div className="product__overview">
@@ -290,12 +338,14 @@ export default function BookPage() {
                                                 </div>
                                             </div>
                                             <div className="product_meta">
-                <span className="posted_in">Categories: 
-                  <Link to="#">Adventure</Link>
-                  <Link to="#">Kids' Music"</Link>
-                </span>
+                                                <div className="posted_in d-flex">
+                                                    <div className="mr-2 font-weight-bold">Categories:</div>
+                                                    {categories && categories.map((category, key) => (
+                                                        <Link to={`/books?category=${category.id}`}
+                                                              className="ml-2" key={key}>{category.name}</Link>
+                                                    ))}
+                                                </div>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -359,11 +409,15 @@ export default function BookPage() {
                                                             <li key={key}>
                                                                 <div className="wn__comment">
                                                                     <div className="content">
-                                                                        <div className="comnt__author d-flex justify-content-between">
-                                                                            <div><h6 style={{fontWeight: 400}}>{review.name}</h6></div>
+                                                                        <div
+                                                                            className="comnt__author d-flex justify-content-between">
+                                                                            <div><h6
+                                                                                style={{fontWeight: 400}}>{review.name}</h6>
+                                                                            </div>
                                                                             <div>
                                                                                 {getReviewStars(Number(review.stars))}
-                                                                                <span className="ml-3">{getReviewDate(review)}</span>
+                                                                                <span
+                                                                                    className="ml-3">{getReviewDate(review)}</span>
                                                                             </div>
                                                                         </div>
                                                                         <p className="mt-2">{review.body}</p>
@@ -390,8 +444,11 @@ export default function BookPage() {
                                                                     <ul className="rating d-flex" ref={starsHolder}>
                                                                         {STARS_RATINGS.map((rating, index) =>
                                                                             (
-                                                                               <li key={index}><i className="star fas fa-star text-gray" data-star={index + 1}
-                                                                                      onClick={() => onReviewStarsInteract(rating, index)}/></li>
+                                                                                <li key={index}><i
+                                                                                    className="star fas fa-star text-gray"
+                                                                                    data-star={index + 1}
+                                                                                    onClick={() => onReviewStarsInteract(rating, index)}/>
+                                                                                </li>
                                                                             )
                                                                         )}
                                                                     </ul>
@@ -691,45 +748,7 @@ export default function BookPage() {
                         </div>
                         <div className="col-lg-3 col-12 md-mt-40 sm-mt-40">
                             <div className="shop__sidebar">
-                                <aside className="wedget__categories poroduct--cat">
-                                    <h3 className="wedget__title">Product Categories</h3>
-                                    <ul>
-                                        <li><Link to="#">Biography <span>(3)</span></Link></li>
-                                        <li><Link to="#">Business <span>(4)</span></Link></li>
-                                        <li><Link to="#">Cookbooks <span>(6)</span></Link></li>
-                                        <li><Link to="#">Health & Fitness <span>(7)</span></Link></li>
-                                        <li><Link to="#">History <span>(8)</span></Link></li>
-                                        <li><Link to="#">Mystery <span>(9)</span></Link></li>
-                                        <li><Link to="#">Inspiration <span>(13)</span></Link></li>
-                                        <li><Link to="#">Romance <span>(20)</span></Link></li>
-                                        <li><Link to="#">Fiction/Fantasy <span>(22)</span></Link></li>
-                                        <li><Link to="#">Self-Improvement <span>(13)</span></Link></li>
-                                        <li><Link to="#">Humor Books <span>(17)</span></Link></li>
-                                        <li><Link to="#">Harry Potter <span>(20)</span></Link></li>
-                                        <li><Link to="#">Land of Stories <span>(34)</span></Link></li>
-                                        <li><Link to="#">Kids' Music <span>(60)</span></Link></li>
-                                        <li><Link to="#">Toys & Games <span>(3)</span></Link></li>
-                                        <li><Link to="#">hoodies <span>(3)</span></Link></li>
-                                    </ul>
-                                </aside>
-                                <aside className="wedget__categories poroduct--tag">
-                                    <h3 className="wedget__title">Product Tags</h3>
-                                    <ul>
-                                        <li><Link to="#">Biography</Link></li>
-                                        <li><Link to="#">Business</Link></li>
-                                        <li><Link to="#">Cookbooks</Link></li>
-                                        <li><Link to="#">Health Fitness</Link></li>
-                                        <li><Link to="#">History</Link></li>
-                                        <li><Link to="#">Mystery</Link></li>
-                                        <li><Link to="#">Inspiration</Link></li>
-                                        <li><Link to="#">Religion</Link></li>
-                                        <li><Link to="#">Fiction</Link></li>
-                                        <li><Link to="#">Fantasy</Link></li>
-                                        <li><Link to="#">Music</Link></li>
-                                        <li><Link to="#">Toys</Link></li>
-                                        <li><Link to="#">Hoodies</Link></li>
-                                    </ul>
-                                </aside>
+                                <BookCategories onCategoryClick={handleCategoryClick}/>
                             </div>
                         </div>
                     </div>

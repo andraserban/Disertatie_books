@@ -33,8 +33,8 @@ export default function Header() {
                                 <li className="drop"><Link to="#">Book club</Link>
                                     <div className="megamenu dropdown">
                                         <ul className="item item01">
-                                            <li><Link to={`/club`}>Dashboard</Link></li>
-                                            <li><Link to="/club/submit">Submit</Link></li>
+                                            <li><Link to="/club">Dashboard</Link></li>
+                                            <li><Link to="/club/admin/submit">Submit</Link></li>
                                         </ul>
                                     </div>
                                 </li>
