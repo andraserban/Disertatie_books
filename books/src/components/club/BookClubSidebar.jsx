@@ -31,7 +31,7 @@ export default function BookClubSidebar() {
     };
 
     useEffect(() => {
-        commentsDispatch(getCommentsAction());
+        getCommentsAction(commentsDispatch);
         getRecentArticles();
     }, [])
 

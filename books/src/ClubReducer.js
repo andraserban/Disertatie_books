@@ -4,16 +4,18 @@ export function addCommentAction(data) {
     return {type: 'ADD_COMMENT', data};
 }
 
-export async function getCommentsAction() {
-    const response = await firebase
+export function getCommentsAction(dispatch) {
+    firebase
         .firestore()
         .collectionGroup("comments")
         .orderBy('date', 'desc')
         .limit(6)
         .get()
-        .then(snap => snap.docs.map(doc => doc.data()));
+        .then(snap => {
+            const response = snap.docs.map(doc => doc.data());
 
-    return {type: 'GET_COMMENTS', data: response};
+            dispatch({type: 'GET_COMMENTS', data: response});
+        });
 }
 
 export const ClubReducer = (state, {type, data}) => {
@@ -22,7 +24,11 @@ export const ClubReducer = (state, {type, data}) => {
             return data;
 
         case 'ADD_COMMENT':
-            return [data, ...state];
+            if (state.length >= 6) {
+                return [data, ...state].slice(0, -1);
+            } else {
+                return [data, ...state]
+            }
 
         default:
             return state;
